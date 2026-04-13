@@ -1,0 +1,162 @@
+/*
+ * CrowdFlow — Stadium Map Styles
+ */
+
+.stadium-map-container {
+  position: relative;
+  width: 100%;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+}
+
+.stadium-map-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.stadium-map-title {
+  font-size: var(--font-base);
+  font-weight: 700;
+}
+
+.map-controls {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.map-canvas-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 0.8;
+  overflow: hidden;
+}
+
+/* SVG Map */
+.stadium-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.zone-path {
+  cursor: pointer;
+  stroke: var(--border-default);
+  stroke-width: 1.5;
+  transition: all var(--transition-fast);
+}
+
+.zone-path:hover {
+  stroke-width: 2.5;
+  stroke: var(--primary-400);
+  filter: brightness(1.2);
+}
+
+.zone-path:focus-visible {
+  stroke: var(--primary-300);
+  stroke-width: 3;
+  outline: none;
+}
+
+.zone-path-low { fill: var(--status-low); fill-opacity: 0.4; }
+.zone-path-moderate { fill: var(--status-moderate); fill-opacity: 0.5; }
+.zone-path-high { fill: var(--status-high); fill-opacity: 0.6; }
+.zone-path-critical { fill: var(--status-critical); fill-opacity: 0.7; animation: pulse 2s infinite; }
+
+.zone-label {
+  font-size: 11px;
+  fill: var(--text-primary);
+  text-anchor: middle;
+  dominant-baseline: central;
+  pointer-events: none;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Heatmap Canvas Overlay */
+.heatmap-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0.6;
+  mix-blend-mode: screen;
+}
+
+/* Zone Tooltip */
+.zone-tooltip {
+  max-width: 250px;
+}
+
+.zone-tooltip-name {
+  font-size: var(--font-sm);
+  font-weight: 700;
+  margin-bottom: var(--space-2);
+  color: var(--text-primary);
+}
+
+.zone-tooltip-stats {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-1) var(--space-3);
+  font-size: var(--font-xs);
+}
+
+.zone-tooltip-label {
+  color: var(--text-muted);
+}
+
+.zone-tooltip-value {
+  color: var(--text-primary);
+  font-weight: 600;
+  text-align: right;
+}
+
+/* Map Legend */
+.map-legend {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  padding: var(--space-3) var(--space-5);
+  border-top: 1px solid var(--border-subtle);
+  font-size: var(--font-xs);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--text-secondary);
+}
+
+.legend-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+}
+
+/* Field Area (center of stadium) */
+.field-area {
+  fill: #1a472a;
+  fill-opacity: 0.4;
+  stroke: #2d8a4e;
+  stroke-width: 1;
+  stroke-dasharray: 4 2;
+}
+
+.field-label {
+  font-size: 14px;
+  fill: #4ade80;
+  fill-opacity: 0.6;
+  text-anchor: middle;
+  dominant-baseline: central;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}

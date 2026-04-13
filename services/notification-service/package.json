@@ -1,0 +1,25 @@
+{
+  "name": "@crowdflow/notification-service",
+  "version": "1.0.0",
+  "private": true,
+  "description": "CrowdFlow Notification Service — FCM & System Alerts",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js"
+  },
+  "dependencies": {
+    "fastify": "^5.1.0",
+    "@fastify/cors": "^10.0.0",
+    "firebase-admin": "^13.0.0",
+    "zod": "^3.23.0",
+    "pino": "^9.5.0",
+    "@crowdflow/shared-types": "*"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "tsx": "^4.19.0",
+    "pino-pretty": "^13.0.0"
+  }
+}

@@ -1,0 +1,67 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: crowdflow
+      POSTGRES_PASSWORD: crowdflow_secret
+      POSTGRES_DB: crowdflow
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - '6379:6379'
+
+  auth-service:
+    build:
+      context: .
+      dockerfile: services/auth-service/Dockerfile
+    environment:
+      DATABASE_URL: postgresql://crowdflow:crowdflow_secret@postgres:5432/crowdflow
+      JWT_SECRET: super_secret_key
+    ports:
+      - '4000:4000'
+    depends_on:
+      - postgres
+
+  crowd-service:
+    build:
+      context: .
+      dockerfile: services/crowd-service/Dockerfile
+    environment:
+      REDIS_URL: redis://redis:6379
+    ports:
+      - '4001:4001'
+      - '4002:4002'
+    depends_on:
+      - redis
+
+  order-service:
+    build:
+      context: .
+      dockerfile: services/order-service/Dockerfile
+    environment:
+      DATABASE_URL: postgresql://crowdflow:crowdflow_secret@postgres:5432/crowdflow
+      ORDER_SERVICE_PORT: 4003
+    ports:
+      - '4003:4003'
+    depends_on:
+      - postgres
+
+  staff-web:
+    build:
+      context: .
+      dockerfile: apps/staff-web/Dockerfile
+    ports:
+      - '80:80'
+    depends_on:
+      - auth-service
+      - crowd-service
+
+volumes:
+  postgres_data:

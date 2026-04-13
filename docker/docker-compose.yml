@@ -1,0 +1,52 @@
+# CrowdFlow — Docker Development Environment
+#
+# Services: PostgreSQL, Redis, Auth Service, Crowd Service
+# Usage: docker compose up -d
+#
+# Ports:
+#   5432 — PostgreSQL
+#   6379 — Redis
+#   4000 — Auth Service (GraphQL)
+#   4001 — Crowd Service (REST)
+#   4002 — WebSocket Server
+#   3000 — Staff Dashboard (Vite dev)
+
+version: '3.9'
+
+services:
+  # ─── PostgreSQL Database ────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: crowdflow-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: crowdflow
+      POSTGRES_PASSWORD: crowdflow_secret
+      POSTGRES_DB: crowdflow
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U crowdflow']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─── Redis Cache ────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: crowdflow-redis
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
+    command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+    driver: local

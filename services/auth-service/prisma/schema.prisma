@@ -1,0 +1,124 @@
+// ──────────────────────────────────────────────────────────────────
+// CrowdFlow Auth Service — Prisma Schema
+//
+// Models: User, RefreshToken, UserPreference
+// Uses PostgreSQL with UUID primary keys and proper indexing.
+// ──────────────────────────────────────────────────────────────────
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// User account — supports both email/password and Firebase (Google) auth
+model User {
+  id            String    @id @default(uuid()) @db.Uuid
+  email         String    @unique @db.VarChar(255)
+  displayName   String    @db.VarChar(100)
+  passwordHash  String?   @db.VarChar(255) // null for social auth
+  role          UserRole  @default(ATTENDEE)
+  avatarUrl     String?   @db.VarChar(500)
+  provider      AuthProvider @default(EMAIL)
+  firebaseUid   String?   @unique @db.VarChar(128) // Firebase Auth UID
+  ticketId      String?   @unique @db.VarChar(50)
+  isVerified    Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  preferences   UserPreference?
+  seatInfo      SeatAssignment?
+  refreshTokens RefreshToken[]
+
+  @@index([email])
+  @@index([firebaseUid])
+  @@index([role])
+  @@map("users")
+}
+
+/// User preferences for dietary needs and accessibility
+model UserPreference {
+  id                   String   @id @default(uuid()) @db.Uuid
+  userId               String   @unique @db.Uuid
+  dietary              DietaryPreference[] @default([NONE])
+  accessibility        AccessibilityNeed[] @default([NONE])
+  notificationsEnabled Boolean  @default(true)
+  language             String   @default("en") @db.VarChar(5)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_preferences")
+}
+
+/// Seat assignment linked to ticket
+model SeatAssignment {
+  id        String @id @default(uuid()) @db.Uuid
+  userId    String @unique @db.Uuid
+  section   String @db.VarChar(10)
+  row       String @db.VarChar(5)
+  seat      Int
+  zoneId    String @db.VarChar(50)
+  gateEntry String @db.VarChar(20)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("seat_assignments")
+}
+
+/// Refresh token with family tracking for rotation detection
+/// If a refresh token is reused after rotation, the entire family is revoked
+/// (indicates token theft — see: https://auth0.com/blog/refresh-tokens-what-are-they-and-when-to-use-them/)
+model RefreshToken {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @db.Uuid
+  tokenHash String    @db.VarChar(255) // SHA-256 hash of the token
+  family    String    @db.VarChar(36)  // Token family UUID for rotation tracking
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([tokenHash])
+  @@index([family])
+  @@map("refresh_tokens")
+}
+
+// ─── Enums ──────────────────────────────────────────────────────
+
+enum UserRole {
+  ATTENDEE
+  STAFF
+  KITCHEN_STAFF
+  SECURITY
+  ADMIN
+}
+
+enum AuthProvider {
+  EMAIL
+  GOOGLE
+  APPLE
+}
+
+enum DietaryPreference {
+  NONE
+  VEGETARIAN
+  VEGAN
+  GLUTEN_FREE
+  HALAL
+  KOSHER
+  NUT_FREE
+}
+
+enum AccessibilityNeed {
+  NONE
+  WHEELCHAIR
+  VISUAL_IMPAIRMENT
+  HEARING_IMPAIRMENT
+  MOBILITY_AID
+}

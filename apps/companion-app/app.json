@@ -1,0 +1,32 @@
+{
+  "expo": {
+    "name": "CrowdFlow",
+    "slug": "crowdflow-companion",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "scheme": "crowdflow",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#f8fafc"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.crowdflow.companion"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#f8fafc"
+      },
+      "edgeToEdgeEnabled": true,
+      "package": "com.crowdflow.companion"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
+  }
+}

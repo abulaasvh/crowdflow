@@ -1,0 +1,77 @@
+name: Build and Deploy to GKE
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  GKE_CLUSTER: crowdflow-cluster
+  GKE_ZONE: us-central1-c
+  REPOSITORY: crowdflow-repo
+  REGION: us-central1
+
+jobs:
+  setup-build-publish-deploy:
+    name: Setup, Build, Publish, and Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    # 1. Setup gcloud CLI
+    - id: 'auth'
+      uses: 'google-github-actions/auth@v2'
+      with:
+        credentials_json: '${{ secrets.GCP_SA_KEY }}'
+
+    - name: 'Set up Cloud SDK'
+      uses: 'google-github-actions/setup-gcloud@v2'
+
+    - name: 'Use gcloud CLI'
+      run: 'gcloud info'
+
+    # 2. Configure Docker to use GCR/Artifact Registry
+    - name: Configure Docker
+      run: |-
+        gcloud auth configure-docker $REGION-docker.pkg.dev
+
+    # 3. Build and Push Docker images
+    - name: Build and Push
+      run: |-
+        services=("auth-service" "crowd-service" "order-service" "navigation-service" "notification-service" "staff-web")
+        for service in "${services[@]}"; do
+          IMAGE_NAME="$REGION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$service:latest"
+          
+          # Use specific Dockerfile paths
+          if [ "$service" == "staff-web" ]; then
+            DOCKERFILE="apps/staff-web/Dockerfile"
+          else
+            DOCKERFILE="services/$service/Dockerfile"
+          fi
+          
+          docker build -t $IMAGE_NAME -f $DOCKERFILE .
+          docker push $IMAGE_NAME
+        done
+
+    # 4. Set up Kustomize (or replace placeholders in manifests)
+    - name: Set up Kustomize
+      run: |-
+        curl -sfLo kustomize https://github.com/kubernetes-sigs/kustomize/releases/download/v3.1.0/kustomize_3.1.0_linux_amd64
+        chmod u+x kustomize
+
+    # 5. Deploy to GKE
+    - name: Deploy
+      run: |-
+        # Get GKE credentials
+        gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE --project $PROJECT_ID
+        
+        # Replace PROJECT_ID placeholder in K8s manifests
+        find deploy/k8s -name "*.yaml" -exec sed -i "s/\${PROJECT_ID}/$PROJECT_ID/g" {} +
+        find deploy/k8s -name "*.yaml" -exec sed -i "s/\${REGION}/$REGION/g" {} +
+        
+        # Apply manifests
+        kubectl apply -f deploy/k8s/
+        kubectl rollout status deployment/auth-service
