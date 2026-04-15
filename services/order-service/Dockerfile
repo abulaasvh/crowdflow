@@ -12,7 +12,7 @@ FROM node:20-alpine AS runner
 WORKDIR /app
 COPY --from=builder /app/services/order-service/dist ./dist
 COPY --from=builder /app/services/order-service/package.json ./
-COPY --from=builder /app/services/order-service/node_modules ./node_modules
+COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/services/order-service/prisma ./prisma
 
 EXPOSE 4003

@@ -1,6 +1,4 @@
-import { gql } from 'mercurius';
-
-export const typeDefs = gql`
+export const typeDefs = `
   type MenuItem {
     id: ID!
     name: String!

@@ -1,0 +1,17 @@
+.git
+.gitignore
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+.env
+.env.*
+.turbo/
+**/.turbo/
+.next/
+**/.next/
+*.log
+.terraform/
+**/.terraform/
+.idea/
+.vscode/

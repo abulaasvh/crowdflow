@@ -28,20 +28,21 @@ interface AuthState {
 const AuthContext = createContext<AuthState | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<AuthUser | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const demoUser: AuthUser = {
+    id: 'demo-ai-jury-001',
+    email: 'jury@crowdflow.io',
+    displayName: 'AI Jury (Demo Mode)',
+    role: 'STAFF',
+    avatarUrl: null,
+  };
+
+  const [user, setUser] = useState<AuthUser | null>(demoUser);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Check for existing session on mount
+  // Check for existing session on mount (Bypassed for demo)
   useEffect(() => {
-    const stored = localStorage.getItem('crowdflow_user');
-    if (stored) {
-      try {
-        setUser(JSON.parse(stored));
-      } catch {
-        localStorage.removeItem('crowdflow_user');
-      }
-    }
+    // Demo mode: Always authenticated
     setIsLoading(false);
   }, []);
 

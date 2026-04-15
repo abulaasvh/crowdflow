@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: staff-web
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: staff-web
+  template:
+    metadata:
+      labels:
+        app: staff-web
+    spec:
+      containers:
+      - name: staff-web
+        image: us-central1-docker.pkg.dev/unified-parser-493312-d0/crowdflow-repo/staff-web:latest
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: staff-web
+spec:
+  selector:
+    app: staff-web
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: LoadBalancer

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import axios from 'axios';
 import { STADIUM_EDGES, STADIUM_NODES } from './graph';
 

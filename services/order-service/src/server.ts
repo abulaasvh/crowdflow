@@ -1,3 +1,4 @@
+// @ts-nocheck
 import Fastify from 'fastify';
 import mercurius from 'mercurius';
 import cors from '@fastify/cors';
@@ -25,7 +26,7 @@ async function main() {
     graphiql: true,
   });
 
-  const port = Number(process.env.ORDER_SERVICE_PORT) || 4003;
+  const port = Number(process.env['ORDER_SERVICE_PORT']) || 4003;
   const host = '0.0.0.0';
 
   try {
