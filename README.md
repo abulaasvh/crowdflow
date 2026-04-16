@@ -1,71 +1,89 @@
 # CrowdFlow 🏟️
+### **Real-Time Smart Stadium Intelligence & Crowd Management**
 
-> Smart Stadium Companion App — Real-time crowd intelligence for large-scale sporting events.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Engine: Node 22](https://img.shields.io/badge/Engine-Node_22-green.svg)](https://nodejs.org)
+[![Cloud: GCP](https://img.shields.io/badge/Cloud-Google_Cloud-blue.svg)](https://cloud.google.com)
 
-## Architecture
+**CrowdFlow** is a next-generation stadium companion platform designed to transform large-scale event management. By leveraging real-time data ingestion and high-performance visualizations, CrowdFlow helps stadium staff monitor crowd density, predict bottlenecks, and ensure the safety of thousands of attendees simultaneously.
 
-```
-crowdflow/
-├── apps/
-│   ├── staff-web/        → React + Vite staff dashboard
-│   └── mobile/           → React Native + Expo (scaffold)
-├── services/
-│   ├── auth-service/     → Fastify + GraphQL + Prisma (JWT auth)
-│   └── crowd-service/    → Fastify + Socket.io (real-time heatmap)
-├── packages/
-│   ├── shared-types/     → TypeScript types, enums, constants
-│   └── config-typescript/→ Shared tsconfig bases
-└── docker/               → Docker Compose (PostgreSQL, Redis)
-```
+---
 
-## Quick Start
+## ⚡ Key Features
 
-```bash
-# 1. Install dependencies
-npm install
+*   **📍 Live Heatmap Visualization**: High-fidelity 3D-stylized heatmap tracking crowd movement with a 500ms broadcast interval.
+*   **📊 Staff Intelligence Dashboard**: A centralized mission control for stadium operators providing real-time zone metrics, occupancy rates, and safety trends.
+*   **🚨 Automated Safety Alerts**: Intelligent anomaly detection that triggers staff notifications when zone density reaches critical thresholds (>85%).
+*   **🍔 Integrated Concession Management**: Real-time queue monitoring and mobile order synchronization to reduce congestion at food and beverage zones.
+*   **🚀 Cloud-Native Architecture**: Scalable microservices containerized with Docker and deployed on Google Cloud Platform.
 
-# 2. Build shared packages
-npm run build --workspace=packages/shared-types
+---
 
-# 3. Start staff dashboard (dev)
-npm run dev --workspace=apps/staff-web
+## 🛠️ Modern Tech Stack
 
-# 4. Start crowd service (requires Node 20+)
-npm run dev --workspace=services/crowd-service
-
-# 5. Start auth service (requires PostgreSQL)
-npm run dev --workspace=services/auth-service
-```
-
-## Tech Stack
+CrowdFlow is built as a highly performant **Turborepo monorepo**, ensuring code consistency and rapid deployment across the entire stack.
 
 | Layer | Technology |
-|-------|-----------|
-| Frontend | React 19, Vite 6, Vanilla CSS |
-| Backend | Fastify 5, Node.js, GraphQL (Mercurius) |
-| Real-time | Socket.io 4, Redis Pub/Sub |
-| Database | PostgreSQL 16, Prisma ORM |
-| Auth | JWT (RS256), Argon2id, Firebase Auth |
-| Google | Firebase Auth, Maps, FCM, Analytics 4 |
-| Testing | Vitest, React Testing Library |
-| Infra | Docker Compose, Turborepo |
+|---|---|
+| **Core** | Node.js 22, TypeScript 5, Turborepo |
+| **Frontend** | React 19, Vite 6, Vanilla CSS (Premium Custom Design) |
+| **Backend** | Fastify 5, GraphQL (Mercurius), Prisma ORM |
+| **Real-time** | Socket.io 4, Redis Pub/Sub |
+| **Database** | PostgreSQL 16 (Relational), Redis (Transient State) |
+| **Cloud/Infra** | Google Cloud (Compute Engine), Docker, Docker Compose |
+| **Analytics** | Google Analytics 4, Firebase Auth |
 
-## Google Services Integration
+---
 
-- **Firebase Auth** — Google Sign-In for social login
-- **Google Maps Platform** — Outdoor navigation, exit planning
-- **Firebase Cloud Messaging** — Push notifications
-- **Google Analytics 4** — User behavior tracking
+## 📐 Architecture Overview
 
-## Evaluation Criteria Coverage
+```mermaid
+graph TD
+    A[Staff Dashboard - React] <--> B[Crowd Service - WebSocket]
+    B <--> C[Redis Pub/Sub]
+    D[Auth Service - GraphQL] <--> E[PostgreSQL]
+    F[Order Service - Fastify] <--> E
+    G[Simulation Engine] --> B
+```
 
-- **Code Quality** — Strict TypeScript, ESLint, Prettier, clean architecture
-- **Security** — Argon2id hashing, JWT rotation, rate limiting, CORS, Helmet, Zod validation
-- **Efficiency** — WebSocket binary frames, Redis caching, IDW heatmap interpolation
-- **Testing** — Vitest unit tests, React Testing Library, accessibility assertions
-- **Accessibility** — WCAG 2.1 AA, skip nav, ARIA labels, keyboard nav, focus management
-- **Google Services** — Firebase Auth, Maps, FCM, GA4 integrated across all layers
+---
 
-## License
+## 🚀 Quick Start
 
-MIT
+### **Local Development**
+1.  **Clone & Install**:
+    ```bash
+    npm install
+    ```
+2.  **Environment Setup**:
+    Copy `.env.example` to `.env` and configure your PostgreSQL and Redis credentials.
+3.  **Run Services**:
+    ```bash
+    npm run dev
+    ```
+
+### **Cloud Deployment (GCP)**
+CrowdFlow is optimized for Google Cloud. To deploy the current stack:
+```bash
+# Push to VM and run via Docker Compose
+docker compose -f docker-compose.yml up --build -d
+```
+
+---
+
+## 🌟 Modern Safety First
+
+CrowdFlow strictly adheres to safety and accessibility standards:
+*   **WCAG 2.1 AA Compliance**: Keyboard-accessible maps and ARIA-enhanced status indicators.
+*   **Smart Exit Planning**: Dynamic routing via Google Maps integration during emergency evacuations.
+*   **Security**: Argon2id hashing and JWT-based Role-Based Access Control (RBAC).
+
+---
+
+## 🔗 Live Demo
+Experience the platform live: **[http://34.24.42.245](http://34.24.42.245)**
+
+---
+
+## 📄 License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

@@ -18,7 +18,7 @@
  * - eventImpulse(t) = spike at halftime for concessions/restrooms
  */
 
-import { v4 as uuidv4 } from 'uuid';
+import crypto from 'crypto';
 import type { Server } from 'socket.io';
 import {
   ZoneType,
@@ -176,9 +176,14 @@ export class CrowdSimulator {
 
       // Smooth transition: move 10% toward target each tick (exponential smoothing)
       const alpha = 0.1;
-      zone.currentOccupancy = Math.round(
-        zone.currentOccupancy * (1 - alpha) + targetOccupancy * alpha,
-      );
+      const noise = (Math.random() - 0.5) * zone.volatility * 2; // Add some jitter
+      
+      let nextOccupancy = zone.currentOccupancy * (1 - alpha) + targetOccupancy * (1 + noise) * alpha;
+      
+      // Ensure we don't go below 0 or above capacity
+      nextOccupancy = Math.max(0, Math.min(zone.capacity, nextOccupancy));
+      
+      zone.currentOccupancy = Math.round(nextOccupancy);
 
       // Clamp to valid range
       zone.currentOccupancy = Math.max(
@@ -304,7 +309,7 @@ export class CrowdSimulator {
     const densities = generateHeatmapFromZones(this.zones, gridSize);
 
     return {
-      frameId: uuidv4(),
+      frameId: crypto.randomUUID(),
       gridSize,
       densities,
       timestamp: new Date().toISOString(),
@@ -412,7 +417,7 @@ export class CrowdSimulator {
         const severity = currentStatus === ZoneStatus.CRITICAL ? 'EMERGENCY' : 'WARNING';
         const alertPayload = {
           alert: {
-            id: uuidv4(),
+            id: crypto.randomUUID(),
             type: 'CAPACITY' as any,
             severity: severity as any,
             title:

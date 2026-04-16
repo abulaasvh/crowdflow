@@ -13,6 +13,7 @@ WORKDIR /app
 COPY --from=builder /app/services/crowd-service/dist ./dist
 COPY --from=builder /app/services/crowd-service/package.json ./
 COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/packages ./packages
 
 EXPOSE 4001 4002
 CMD ["node", "dist/server.js"]

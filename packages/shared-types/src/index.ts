@@ -6,10 +6,30 @@
  */
 
 // Enums
+export { 
+  UserRole, 
+  AuthProvider, 
+  ZoneType, 
+  ZoneStatus, 
+  OrderStatus, 
+  PaymentStatus, 
+  AlertSeverity, 
+  AlertType, 
+  WSChannel, 
+  DietaryPreference, 
+  AccessibilityNeed 
+} from './enums';
 export * from './enums';
 
 // Constants
-export * from './constants';
+export { 
+  API_ROUTES, 
+  WS_CONFIG, 
+  SECURITY, 
+  STADIUM, 
+  GOOGLE_SERVICES 
+} from './constants';
+export * from './constants'; // Keep export * for any others omitted above
 
 // Type definitions
 export * from './auth';

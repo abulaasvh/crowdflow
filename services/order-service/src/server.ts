@@ -7,14 +7,7 @@ import { typeDefs } from './schema';
 import { resolvers } from './resolvers';
 import pino from 'pino';
 
-const logger = pino({
-  transport: {
-    target: 'pino-pretty',
-    options: { colorize: true },
-  },
-});
-
-const server = Fastify({ logger });
+const server = Fastify({ logger: true });
 
 async function main() {
   await server.register(helmet, { contentSecurityPolicy: false });

@@ -12,7 +12,7 @@
  */
 
 import jwt from 'jsonwebtoken';
-import { v4 as uuidv4 } from 'uuid';
+import crypto from 'crypto';
 import { SECURITY } from '@crowdflow/shared-types';
 import type { JWTPayload, UserRole } from '@crowdflow/shared-types';
 
@@ -35,7 +35,7 @@ export function generateAccessToken(input: TokenInput): string {
     sub: input.userId,
     email: input.email,
     role: input.role,
-    jti: uuidv4(), // Unique token ID for revocation
+    jti: crypto.randomUUID(), // Unique token ID for revocation
   };
 
   return jwt.sign(payload, ACCESS_SECRET, {
@@ -62,7 +62,7 @@ export function generateRefreshToken(
     sub: input.userId,
     email: input.email,
     role: input.role,
-    jti: uuidv4(),
+    jti: crypto.randomUUID(),
     family,
   };
 
@@ -110,7 +110,7 @@ export function verifyRefreshToken(
  * share the same family until the next login.
  */
 export function generateTokenFamily(): string {
-  return uuidv4();
+  return crypto.randomUUID();
 }
 
 /**

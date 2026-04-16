@@ -108,3 +108,55 @@ export const resolvers: IResolvers = {
     },
   },
 };
+
+// Simulation: Generate random orders for demo
+async function runOrderSimulator() {
+  console.log('🍔 Order Simulator Started (Demo Mode)');
+  
+  const SEATS = ['A-101', 'B-204', 'C-305', 'D-112', 'E-501', 'VIP-12', 'GA-88'];
+  const USERS = ['demo-user-1', 'demo-user-2', 'demo-user-3', 'jury-ai'];
+
+  setInterval(() => {
+    try {
+      const randomItemsCount = Math.floor(Math.random() * 3) + 1;
+      const items: any[] = [];
+      let total = 0;
+
+      for (let i = 0; i < randomItemsCount; i++) {
+          const menuItem = MOCK_MENU[Math.floor(Math.random() * MOCK_MENU.length)];
+          if (!menuItem) continue;
+          const qty = Math.floor(Math.random() * 2) + 1;
+          items.push({
+              id: crypto.randomUUID(),
+              menuItem,
+              quantity: qty
+          });
+          total += (menuItem.price || 0) * qty;
+      }
+
+      const order = {
+        id: crypto.randomUUID(),
+        userId: USERS[Math.floor(Math.random() * USERS.length)],
+        seatInfo: SEATS[Math.floor(Math.random() * SEATS.length)],
+        totalPrice: total,
+        orderNumber: `#CF-${Math.floor(1000 + Math.random() * 9000)}`,
+        status: 'CONFIRMED',
+        createdAt: new Date().toISOString(),
+        items
+      };
+
+      inMemoryOrders.unshift(order); // Put at front so dashboard shows newest
+      if (inMemoryOrders.length > 50) inMemoryOrders.pop(); // Keep manageable
+      
+      console.log(`✨ Simulated Order: ${order.orderNumber} ($${total})`);
+    } catch (err) {
+      console.error('Order Simulator Error:', err);
+    }
+  }, 20000); // Every 20 seconds
+}
+
+// Start simulation after a small delay
+checkDb().then(dbOk => {
+    if (!dbOk) runOrderSimulator();
+}).catch(() => runOrderSimulator());
+

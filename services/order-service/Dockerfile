@@ -6,6 +6,7 @@ COPY packages ./packages
 COPY services/order-service ./services/order-service
 
 RUN npm install
+RUN npx prisma generate --schema=services/order-service/prisma/schema.prisma
 RUN npx turbo build --filter=@crowdflow/order-service
 
 FROM node:20-alpine AS runner
@@ -13,6 +14,7 @@ WORKDIR /app
 COPY --from=builder /app/services/order-service/dist ./dist
 COPY --from=builder /app/services/order-service/package.json ./
 COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/packages ./packages
 COPY --from=builder /app/services/order-service/prisma ./prisma
 
 EXPOSE 4003

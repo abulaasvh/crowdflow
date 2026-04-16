@@ -12,6 +12,7 @@ COPY services/auth-service ./services/auth-service
 RUN npm install
 
 # Build the auth service
+RUN npx prisma generate --schema=services/auth-service/prisma/schema.prisma
 RUN npx turbo build --filter=@crowdflow/auth-service
 
 # Final stage
@@ -20,6 +21,7 @@ WORKDIR /app
 COPY --from=builder /app/services/auth-service/dist ./dist
 COPY --from=builder /app/services/auth-service/package.json ./
 COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/packages ./packages
 COPY --from=builder /app/services/auth-service/prisma ./prisma
 
 EXPOSE 4000

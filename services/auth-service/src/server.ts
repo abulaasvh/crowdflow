@@ -33,7 +33,7 @@ const HOST = process.env['HOST'] || '0.0.0.0';
  */
 export async function buildServer() {
   const app = Fastify({
-    loggerInstance: logger,
+    logger: true,
     bodyLimit: 1_048_576, // 1 MB — prevent large payload DoS
     trustProxy: true,      // Required for rate-limit behind reverse proxy
   });

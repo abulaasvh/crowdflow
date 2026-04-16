@@ -20,6 +20,7 @@ WORKDIR /app
 COPY --from=builder /app/services/navigation-service/dist ./dist
 COPY --from=builder /app/services/navigation-service/package.json ./
 COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/packages ./packages
 
 EXPOSE 4004
 CMD ["node", "dist/server.js"]
