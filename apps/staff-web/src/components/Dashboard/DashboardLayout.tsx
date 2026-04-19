@@ -13,8 +13,10 @@ import { StadiumMap } from '../StadiumMap/StadiumMap';
 import { AlertPanel } from './AlertPanel';
 import { ZoneGrid } from './ZoneGrid';
 import { OrderQueue } from '../Orders/OrderQueue';
+import { ExitPlanner } from '../ExitPlanner/ExitPlanner';
+import { ServiceHealth } from './ServiceHealth';
 
-type NavPage = 'overview' | 'zones' | 'orders' | 'alerts' | 'exit-plan';
+type NavPage = 'overview' | 'zones' | 'orders' | 'alerts' | 'exit-plan' | 'health';
 
 export function DashboardLayout() {
   const { user, logout } = useAuth();
@@ -27,6 +29,7 @@ export function DashboardLayout() {
     { id: 'orders', icon: '🛒', label: 'Order Queue' },
     { id: 'alerts', icon: '🔔', label: 'Alerts', badge: 3 },
     { id: 'exit-plan', icon: '🚪', label: 'Exit Planner' },
+    { id: 'health', icon: '⚡', label: 'System Health' },
   ];
 
   return (
@@ -117,7 +120,8 @@ export function DashboardLayout() {
         {activePage === 'zones' && <ZoneGrid />}
         {activePage === 'orders' && <OrderQueue />}
         {activePage === 'alerts' && <AlertPanel />}
-        {activePage === 'exit-plan' && <ExitPlannerPage />}
+        {activePage === 'exit-plan' && <ExitPlanner />}
+        {activePage === 'health' && <ServiceHealth />}
       </main>
     </div>
   );
@@ -143,26 +147,4 @@ function OverviewPage() {
   );
 }
 
-/** Exit planner page placeholder */
-function ExitPlannerPage() {
-  return (
-    <div className="glass-card" style={{ padding: 'var(--space-8)', textAlign: 'center' }}>
-      <h2 style={{ marginBottom: 'var(--space-4)' }}>🚪 Smart Exit Planner</h2>
-      <p style={{ color: 'var(--text-secondary)', marginBottom: 'var(--space-6)' }}>
-        Post-event gate recommendations with real-time crowd load and transport connections.
-      </p>
-      <div style={{
-        padding: 'var(--space-6)',
-        background: 'var(--bg-tertiary)',
-        borderRadius: 'var(--radius-md)',
-        border: '1px solid var(--border-subtle)',
-      }}>
-        <p style={{ color: 'var(--text-muted)', fontSize: 'var(--font-sm)' }}>
-          🗺️ Google Maps integration will display optimal exit routes and nearby transport options.
-          <br /><br />
-          Configure <code>VITE_GOOGLE_MAPS_API_KEY</code> to enable outdoor navigation.
-        </p>
-      </div>
-    </div>
-  );
-}
+

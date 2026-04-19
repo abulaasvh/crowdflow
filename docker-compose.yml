@@ -11,11 +11,21 @@ services:
       - '5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U crowdflow']
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   redis:
     image: redis:7-alpine
     ports:
       - '6379:6379'
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   auth-service:
     build:
@@ -24,10 +34,13 @@ services:
     environment:
       DATABASE_URL: postgresql://crowdflow:crowdflow_secret@postgres:5432/crowdflow
       JWT_SECRET: super_secret_key
+      NODE_ENV: production
     ports:
       - '4000:4000'
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
 
   crowd-service:
     build:
@@ -35,11 +48,14 @@ services:
       dockerfile: services/crowd-service/Dockerfile
     environment:
       REDIS_URL: redis://redis:6379
+      NODE_ENV: production
     ports:
       - '4001:4001'
       - '4002:4002'
     depends_on:
-      - redis
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
 
   order-service:
     build:
@@ -48,10 +64,38 @@ services:
     environment:
       DATABASE_URL: postgresql://crowdflow:crowdflow_secret@postgres:5432/crowdflow
       ORDER_SERVICE_PORT: 4003
+      NODE_ENV: production
     ports:
       - '4003:4003'
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  navigation-service:
+    build:
+      context: .
+      dockerfile: services/navigation-service/Dockerfile
+    environment:
+      NAVIGATION_SERVICE_PORT: 4004
+      CROWD_SERVICE_URL: http://crowd-service:4001
+      NODE_ENV: production
+    ports:
+      - '4004:4004'
+    depends_on:
+      - crowd-service
+    restart: unless-stopped
+
+  notification-service:
+    build:
+      context: .
+      dockerfile: services/notification-service/Dockerfile
+    environment:
+      NOTIFICATION_SERVICE_PORT: 4005
+      NODE_ENV: production
+    ports:
+      - '4005:4005'
+    restart: unless-stopped
 
   staff-web:
     build:
@@ -62,6 +106,8 @@ services:
     depends_on:
       - auth-service
       - crowd-service
+      - order-service
+    restart: unless-stopped
 
 volumes:
   postgres_data:
